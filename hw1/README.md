@@ -1,9 +1,4 @@
 ## hw1 - докер
-Скачать докер-образ из реестра:
-```bash
-docker pull tvv766/hw1
-```
-
 Для Веб-сервера выбрана версия node:slim
 
 Создание докера
@@ -27,4 +22,8 @@ Push в DockerHub
 ```bash
 docker tag hw1 tvv766/hw1
 docker push tvv766/hw1
+```
+Скачать докер-образ из реестра:
+```bash
+docker pull tvv766/hw1
 ```
