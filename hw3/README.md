@@ -1,8 +1,8 @@
 ## hw3 - создать RESTful CRUD.
-Создать RESTful CRUD по созданию, удалению, просмотру и обновлению пользователей
+Создать приложение RESTful CRUD по созданию, удалению, просмотру и обновлению пользователей
 
 ### Приложение на Node.js  
-База данных PostgeSQL, схема таблицы пользователей:
+База данных PostgeSQL, таблица пользователей:
 ```
 CREATE TABLE IF NOT EXISTS users (
   ID SERIAL PRIMARY KEY,
@@ -63,6 +63,7 @@ postgresql:
     port: "5432"
 ```
 Добавляем Job postgres-job.yaml для создание таблицы users и заполнению таблицы несколькими записями
+
 Проверяем схему
 ```
 helm template hw3-chart
@@ -83,11 +84,12 @@ kubectl get all
 minikube tunnel 
 ```
 Создаем запросы в Postman, экспортируем коллекцию (папка newman)
+
 Проверяем запросы с помощью утилиты newman
 ```
 newman run HW3.postman_collection.json
 ```
-
+![](https://github.com/korolevt/otus_microservices_2023/blob/main/hw3/newman/newman_results.jpg)
 ## Полезные ссылки 
 How to add dependency to Helm Chart
 https://devpress.csdn.net/k8s/62f4e9d9c6770329307fa956.html
