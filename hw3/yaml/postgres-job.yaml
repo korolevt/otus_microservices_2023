@@ -1,0 +1,44 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: init-db
+
+spec:
+  template:
+    metadata:
+      name:  init-db
+      labels:
+        app: init-postgresdb
+    spec:
+      containers:
+      - image: docker.io/bitnami/postgresql:14.2.0-debian-10-r22
+        name: init-db
+        command:
+          - sh
+          - "-c"
+          - |
+            psql -h postgres -a << 'EOF'
+              CREATE TABLE IF NOT EXISTS users(
+                ID SERIAL PRIMARY KEY,
+                name VARCHAR(30),
+                email VARCHAR(30));
+              INSERT INTO users (name, email) VALUES ('Alexandr', 'alexandr@example.com'), ('Sergey', 'sergey@example.com');
+            EOF
+        env:
+          - name: PGUSER
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: postgres_user
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: postgres-secret
+                key: postgres_password
+          - name: PGDATABASE 
+            valueFrom:
+              configMapKeyRef:
+                name: postgres-conf
+                key: name
+
+      restartPolicy: OnFailure
