@@ -38,42 +38,47 @@ kubectl get pods
 ```
 minikube tunnel 
 ```
-Проверяем запрос и прописываем в C:\Windows\System32\drivers\etc\hosts хост arch.homework с адресом 127.0.0.1
+Проверяем запросом
 ```
 curl --resolve arch.homework:80:127.0.0.1 -i http://arch.homework:80/health
 ```
+Прописываем в C:\Windows\System32\drivers\etc\hosts хост arch.homework с адресом 127.0.0.1
 ### Для Linux
 Узнаем ip адрес minukube 
 ```
 minikube ip 
 ```
-Проверяем запрос и прописываем в /etc/hosts хост arch.homework с адресом миникуба (minikube ip)
+Проверяем запросом
 ```
 curl --resolve arch.homework:80:$(minikube ip) -i http://arch.homework:80/health
 ```
+Прописываем в /etc/hosts хост arch.homework с адресом миникуба (minikube ip)
 
 ### Дополнительно в Ingress-е добавлено правило, которое форвардит все запросы с /otusapp/{student name}/* на сервис с rewrite-ом пути. Где {student name} - это имя студента
-`
+```
 nginx.ingress.kubernetes.io/configuration-snippet: |
       rewrite ^/health(/?)$ /health break;
       rewrite ^/otusapp/(.+)/(.*) /$2 break;
-`
+```
 
 ### Итоговые запросы
 `
 curl http://arch.homework/health
+`
+<br>
+`
 curl arch.homework/otusapp/tkorolev/health
 `
 
 ## Полезные ссылки 
-Настройка Liveness, Readiness и Startup проб
+Настройка Liveness, Readiness и Startup проб<br>
 https://kubernetes.io/ru/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
 
-Ingress
+Ingress<br>
 https://kubernetes.io/docs/concepts/services-networking/ingress/
 
-Шпаргалка по kubectl
+Шпаргалка по kubectl<br>
 https://kubernetes.io/ru/docs/reference/kubectl/cheatsheet/
 
-Using kubectl to Create an Nginx Ingress
+Using kubectl to Create an Nginx Ingress<br>
 https://support.huaweicloud.com/intl/en-us/my-kualalumpur-1-usermanual-cce/cce_01_0364.html
