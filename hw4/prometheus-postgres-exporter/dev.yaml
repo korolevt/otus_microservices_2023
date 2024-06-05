@@ -1,0 +1,10 @@
+serviceMonitor:
+  enabled: true
+
+config:
+  datasource:
+    database: user_db
+    host: hw4-postgresql
+    user: usr
+    password: pwd
+

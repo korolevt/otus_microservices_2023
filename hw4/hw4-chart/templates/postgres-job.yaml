@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}"
+  labels:
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"	
+    spec:
+      containers:
+        - name: post-install-job
+          image: {{ printf "%s/%s:%s" .Values.postgresql.image.registry .Values.postgresql.image.repository .Values.postgresql.image.tag }}
+          command:
+            - sh
+            - "-c"
+            - |
+              psql -a << 'EOF'
+                CREATE TABLE IF NOT EXISTS users(
+                  ID SERIAL PRIMARY KEY,
+                  name VARCHAR(30),
+                  email VARCHAR(30));
+                INSERT INTO users (name, email) VALUES ('Alexandr', 'alexandr@example.com'), ('Sergey', 'sergey@example.com');
+              EOF
+          env:
+            - name: PGUSER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres_user
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret
+                  key: postgres_password
+            - name: PGDATABASE 
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-conf
+                  key: name
+            - name: PGHOST
+              valueFrom:
+                configMapKeyRef:
+                  name: postgres-conf
+                  key: host            
+      restartPolicy: OnFailure

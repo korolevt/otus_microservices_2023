@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: service-monitor
+  labels:
+    {{- include "hw4-chart.labels" . | nindent 4 }}
+spec:
+  endpoints:
+    - port: http
+      scrapeTimeout: 30s
+      path: /actuator/prometheus     
+      honorLabels: true
+      scheme: http
+  selector:
+    matchLabels:
+      {{- include "hw4-chart.selectorLabels" . | nindent 6 }}

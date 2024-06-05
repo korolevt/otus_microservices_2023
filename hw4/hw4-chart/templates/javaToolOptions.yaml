@@ -1,0 +1,6 @@
+{{/*
+JVM customisation
+*/}}
+{{- define "chart.javaToolOptions" -}} 
+-XX:NativeMemoryTracking=summary -XX:+UseSerialGC -Xss512k -Xms128m -Xmx128m -XX:MaxMetaspaceSize=100m -XX:CompressedClassSpaceSize=20m -XX:ReservedCodeCacheSize=33m -XX:MaxDirectMemorySize=6m
+{{- end }}

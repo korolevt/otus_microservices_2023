@@ -1,0 +1,59 @@
+Установка helm
+https://medium.com/@ranjeetjangra/install-helm-on-centos-7-746951f8a8ee
+
+Установка прометеус
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm install stack prometheus-community/kube-prometheus-stack -f prometheus.yaml
+
+Установка ingress-nginx
+kubectl create namespace m && helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx/ && helm repo update && helm install nginx ingress-nginx/ingress-nginx --namespace m -f nginx-ingress.yaml --set controller.metrics.enabled=true --set controller.metrics.serviceMonitor.enabled=true --set controller.metrics.serviceMonitor.additionalLabels.release="kube-prometheus-stack"
+
+Установка ingress-nginx с поддержкой метрик
+helm upgrade --install ingress-nginx ingress-nginx \
+  --repo https://kubernetes.github.io/ingress-nginx \
+  --namespace ingress-nginx --create-namespace \
+  --set controller.metrics.enabled=true \
+  --set controller.metrics.serviceMonitor.enabled=true \
+  --set controller.metrics.serviceMonitor.additionalLabels.release="kube-prometheus-stack"
+
+Установка приложения, c помощью helm
+helm template hw4-chart
+helm install hw4 hw4-chart
+
+kubectl get all --all-namespaces
+
+Список методов, которые автоматически создает actuator
+http://localhost:8000/actuator
+
+Доступ к приложению
+http://arch.homework/otusapp/tkorolev/(.*)
+http://arch.homework/(.*)
+curl http://arch.homework:8088/users
+
+minikube dashboard
+kubectl proxy --address='0.0.0.0' --disable-filter=true
+http://10.75.40.19:8001/api/v1/namespaces/kubernetes-dashboard/services/http:kubernetes-dashboard:/proxy
+
+Установка ab для тестирования
+yum provides /usr/bin/ab
+yum install httpd-tools
+ab -n 500 -c 50  http://arch.homework:8088/users
+
+Прокидываем прометус
+kubectl port-forward service/prometheus-operated  9090
+
+
+Прокидываем графану
+kubectl port-forward service/stack-grafana  9000:80
+admin / prom-operator
+
+Настройка телеграмма:
+https://grafana.com/blog/2023/12/28/how-to-integrate-grafana-alerting-and-telegram/
+
+https://t.me/hw4alert_bot
+
+Install the Prometheus-Postgres-Exporter
+helm upgrade  prometheus-postgres-exporter prometheus-community/prometheus-postgres-exporter -f prometheus-postgres-exporter/dev.yaml --install
+helm install prometheus-postgres-exporter prometheus-community/prometheus-postgres-exporter -f prometheus-postgres-exporter/dev.yaml
+
+kubectl logs $(kubectl get pods -A | grep 'prometheus-postgres-exporter.' | awk {'print $2'})
