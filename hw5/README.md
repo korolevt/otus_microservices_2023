@@ -3,8 +3,9 @@
 
 0. Установка и настройка
 ```
-helm install hw5-auth hw5-auth-helm
-helm install hw5-user hw5-user-helm
+helm install hw5-user helm/hw5-user-helm
+helm install hw5-auth helm/hw5-auth-helm
+
 kubectl apply -f api-gateway/nginx-ingress/ingress.yaml
 ```
 
