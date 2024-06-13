@@ -1,0 +1,319 @@
+{
+	"id": "187b9c51-f23d-4ac6-8f72-48058a9b04a3",
+	"name": "hw5",
+	"timestamp": "2024-06-13T11:55:42.104Z",
+	"collection_id": "0-3022cc34-2afb-4b82-af5b-63fa5c25caaf",
+	"folder_id": 0,
+	"environment_id": "0",
+	"totalPass": 9,
+	"totalFail": 0,
+	"results": [
+		{
+			"id": "4508ea28-f3a3-4d2a-a87f-e4d3f5b4d06c",
+			"name": "Register (create) user1",
+			"url": "http://arch.homework:9088/users",
+			"time": 132,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Созданный Пользователь 1 должен вернуть идентификатор": true
+			},
+			"testPassFailCounts": {
+				"Созданный Пользователь 1 должен вернуть идентификатор": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				132
+			],
+			"allTests": [
+				{
+					"Созданный Пользователь 1 должен вернуть идентификатор": true
+				}
+			]
+		},
+		{
+			"id": "a5ac1b75-5877-4c31-8681-31576f383ce3",
+			"name": "Access user1",
+			"url": "http://arch.homework:9088/users/1",
+			"time": 30,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Пользователь 1 не имеет доступа без логина": true
+			},
+			"testPassFailCounts": {
+				"Пользователь 1 не имеет доступа без логина": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				30
+			],
+			"allTests": [
+				{
+					"Пользователь 1 не имеет доступа без логина": true
+				}
+			]
+		},
+		{
+			"id": "8e0f6aa7-cfc0-44f6-8906-a9fcef973453",
+			"name": "Authenticate user1",
+			"url": "http://arch.homework:9088/auth/login",
+			"time": 5389,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Пользователь 1 аутентифицирован": true
+			},
+			"testPassFailCounts": {
+				"Пользователь 1 аутентифицирован": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				5389
+			],
+			"allTests": [
+				{
+					"Пользователь 1 аутентифицирован": true
+				}
+			]
+		},
+		{
+			"id": "e25c0671-568e-4d77-97fb-eda00d484c9a",
+			"name": "Authorize user1",
+			"url": "http://arch.homework:9088/auth/",
+			"time": 3831,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Пользователь 1 получает токен авторизации": true
+			},
+			"testPassFailCounts": {
+				"Пользователь 1 получает токен авторизации": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				3831
+			],
+			"allTests": [
+				{
+					"Пользователь 1 получает токен авторизации": true
+				}
+			]
+		},
+		{
+			"id": "b435c0b6-e1db-4bc7-aff7-064c8849e60d",
+			"name": "Update user1 email",
+			"url": "http://arch.homework:9088/users/1",
+			"time": 53,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Почта Пользователя 1 изменена": true
+			},
+			"testPassFailCounts": {
+				"Почта Пользователя 1 изменена": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				53
+			],
+			"allTests": [
+				{
+					"Почта Пользователя 1 изменена": true
+				}
+			]
+		},
+		{
+			"id": "9050a736-42fa-4c60-8c2f-6c2008cfb7d5",
+			"name": "Register (create) user2",
+			"url": "http://arch.homework:9088/users",
+			"time": 37,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Созданный Пользователь 2 должен вернуть идентификатор": true
+			},
+			"testPassFailCounts": {
+				"Созданный Пользователь 2 должен вернуть идентификатор": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				37
+			],
+			"allTests": [
+				{
+					"Созданный Пользователь 2 должен вернуть идентификатор": true
+				}
+			]
+		},
+		{
+			"id": "dc83b731-6742-4c03-a55a-3a0af46a0c20",
+			"name": "Authenticate user2",
+			"url": "http://arch.homework:9088/auth/login",
+			"time": 1885,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Пользователь 2 аутентифицирован": true
+			},
+			"testPassFailCounts": {
+				"Пользователь 2 аутентифицирован": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				1885
+			],
+			"allTests": [
+				{
+					"Пользователь 2 аутентифицирован": true
+				}
+			]
+		},
+		{
+			"id": "f0f6d33d-96bb-481a-a32f-7a83fa038451",
+			"name": "Authorize user2",
+			"url": "http://arch.homework:9088/auth/",
+			"time": 1258,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {},
+			"testPassFailCounts": {},
+			"times": [
+				1258
+			],
+			"allTests": [
+				{}
+			]
+		},
+		{
+			"id": "2985504d-6b64-466d-a545-33c33848692f",
+			"name": "Access user1 from user2",
+			"url": "http://arch.homework:9088/users/1",
+			"time": 48,
+			"responseCode": {
+				"code": 403,
+				"name": "Forbidden"
+			},
+			"tests": {
+				"Пользователь 2 не имеет доступа на чтение и редактирование профиля Пользователя 1": true
+			},
+			"testPassFailCounts": {
+				"Пользователь 2 не имеет доступа на чтение и редактирование профиля Пользователя 1": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				48
+			],
+			"allTests": [
+				{
+					"Пользователь 2 не имеет доступа на чтение и редактирование профиля Пользователя 1": true
+				}
+			]
+		},
+		{
+			"id": "40728eb3-b67f-458d-b9ad-51f2a8fb8cdd",
+			"name": "Access user2",
+			"url": "http://arch.homework:9088/users/2",
+			"time": 40,
+			"responseCode": {
+				"code": 200,
+				"name": "OK"
+			},
+			"tests": {
+				"Пользователь 2 имеет доступ на чтение и редактирование профиля Пользователя 2": true
+			},
+			"testPassFailCounts": {
+				"Пользователь 2 имеет доступ на чтение и редактирование профиля Пользователя 2": {
+					"pass": 1,
+					"fail": 0
+				}
+			},
+			"times": [
+				40
+			],
+			"allTests": [
+				{
+					"Пользователь 2 имеет доступ на чтение и редактирование профиля Пользователя 2": true
+				}
+			]
+		}
+	],
+	"count": 1,
+	"totalTime": 12703,
+	"collection": {
+		"requests": [
+			{
+				"id": "4508ea28-f3a3-4d2a-a87f-e4d3f5b4d06c",
+				"method": "POST"
+			},
+			{
+				"id": "a5ac1b75-5877-4c31-8681-31576f383ce3",
+				"method": "GET"
+			},
+			{
+				"id": "8e0f6aa7-cfc0-44f6-8906-a9fcef973453",
+				"method": "POST"
+			},
+			{
+				"id": "e25c0671-568e-4d77-97fb-eda00d484c9a",
+				"method": "GET"
+			},
+			{
+				"id": "b435c0b6-e1db-4bc7-aff7-064c8849e60d",
+				"method": "PUT"
+			},
+			{
+				"id": "9050a736-42fa-4c60-8c2f-6c2008cfb7d5",
+				"method": "POST"
+			},
+			{
+				"id": "dc83b731-6742-4c03-a55a-3a0af46a0c20",
+				"method": "POST"
+			},
+			{
+				"id": "f0f6d33d-96bb-481a-a32f-7a83fa038451",
+				"method": "GET"
+			},
+			{
+				"id": "2985504d-6b64-466d-a545-33c33848692f",
+				"method": "GET"
+			},
+			{
+				"id": "40728eb3-b67f-458d-b9ad-51f2a8fb8cdd",
+				"method": "GET"
+			}
+		]
+	}
+}

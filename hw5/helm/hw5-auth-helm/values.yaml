@@ -1,0 +1,27 @@
+replicaCount: 1
+
+application:
+  deployment:
+    pod:
+      repository: tvv766/hw5-auth-app
+      pullPolicy: Never
+      tag: "latest"
+      #tag: v1
+      port: 80
+  service:
+    type: LoadBalancer
+    port: 8080
+
+postgresql:
+  enabled: true
+  auth:
+    username: usr
+    password: pwd
+    database: user_db
+  service:
+    port: "5432"
+
+external:
+  user_service: http://hw5-user-app-service.default.svc.cluster.local:8000
+  
+auth_salt: "123"
