@@ -1,0 +1,27 @@
+replicaCount: 1
+
+application:
+  deployment:
+    pod:
+      repository: tvv766/hw6-notifications-app
+      pullPolicy: Never
+      tag: "latest"
+      #tag: v1
+      port: 80
+  service:
+    type: LoadBalancer
+    port: 8083
+
+postgresql:
+  enabled: true
+  auth:
+    username: usr
+    password: pwd
+    database: user_db
+  service:
+    port: "5432"
+
+kafka:
+  dns: kafka.default.svc.cluster.local:9092
+
+auth_salt: "123"

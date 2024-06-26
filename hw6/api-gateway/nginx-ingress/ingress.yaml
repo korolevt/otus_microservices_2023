@@ -1,0 +1,87 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hw6-user-app-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /users/$1
+spec:
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /otusapp/tkorolev/users/(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: hw6-user-app-service
+                port:
+                  number: 8000
+          - path: /users/(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: hw6-user-app-service
+                port:
+                  number: 8000
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hw6-billing-app-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /(billing/.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: hw6-billing-app-service
+                port:
+                  number: 8081
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hw6-order-app-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+        - path: /(orders.*)
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: hw6-order-app-service
+              port:
+                number: 8082
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hw6-notifications-app-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+spec:
+  rules:
+    - host: arch.homework
+      http:
+        paths:
+          - path: /(notifications.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: hw6-notifications-app-service
+                port:
+                  number: 8083

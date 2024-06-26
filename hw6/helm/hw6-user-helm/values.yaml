@@ -1,0 +1,28 @@
+replicaCount: 1
+
+application:
+  deployment:
+    pod:
+      repository: tvv766/hw6-user-app
+      pullPolicy: Never
+      tag: "latest"
+      #tag: v1
+      port: 80
+  service:
+    type: LoadBalancer
+    port: 8000
+
+postgresql:
+  enabled: true
+  auth:
+    username: usr
+    password: pwd
+    database: user_db
+  service:
+    port: "5432"
+
+external:
+  billing_service: http://hw6-billing-app-service.default.svc.cluster.local:8081
+
+auth_salt: "123"
+

@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}-deployment
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Chart.Name }}-{{ .Chart.Type }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Chart.Name }}-{{ .Chart.Type }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: {{ .Values.application.deployment.pod.repository}}:{{ .Values.application.deployment.pod.tag }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.application.deployment.pod.port }}
+          livenessProbe:
+            periodSeconds: 10
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+          readinessProbe:
+            periodSeconds: 10
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+          startupProbe:
+            failureThreshold: 25
+            periodSeconds: 10
+            httpGet:
+              path: /actuator/health
+              port: http
+          env:
+            - name: DB_HOST   
+              value: {{ include "postgresql.fullname" . | quote }}
+            - name: DB_NAME # Setting Database username from Secret
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secret 
+                  key: postgres_database
+            - name: POSTGRES_USER  # Setting Database username from Secret
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secret 
+                  key: postgres_user
+            - name: POSTGRES_PASSWORD # Setting Database password from Secret
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secret
+                  key: postgres_password
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: JWT_SECRET
+                  name: {{ .Chart.Name }}-secret
+
+            - name: APP_PORT
+              value: {{ .Values.application.deployment.pod.port | quote }}
+
+            - name: BILLING_SERVICE
+              value: {{ .Values.external.billing_service }}
+
+            - name: KAFKA_HOST
+              value: {{ .Values.kafka.dns }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}-service
+spec:
+  selector:
+    app: {{ .Chart.Name }}-{{ .Chart.Type }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.application.service.port }}
+      targetPort: {{ .Values.application.deployment.pod.port }}
+  type: {{ .Values.application.service.type }}
