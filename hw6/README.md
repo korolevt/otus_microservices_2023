@@ -15,11 +15,10 @@ kubectl apply -f api-gateway/nginx-ingress/ingress.yaml
 ```
 
 1. Архитектура и схема взаимодействия
-```
-![скриншот](pic/schema.jpg)
-```
+
+![скриншот](pic/shema.jpg)
+
 
 2. Тест постмана (newman)
-```
+
 ![скриншот](pic/newman_hw6.jpg)
-```
