@@ -4,12 +4,12 @@
 0. Установка и настройка
 ```
 Приложения:
-helm install hw6-user hw6-user-helm
-helm install hw6-billing hw6-billing-helm
-helm install hw6-order hw6-order-helm
-helm install hw6-notifications hw6-notifications-helm
+helm install hw6-user helm/hw6-user-helm
+helm install hw6-billing helm/hw6-billing-helm
+helm install hw6-order helm/hw6-order-helm
+helm install hw6-notifications helm/hw6-notifications-helm
 Кафка:
-helm install kafka single-node-kafka
+helm install kafka helm/single-node-kafka
 Ингресс:
 kubectl apply -f api-gateway/nginx-ingress/ingress.yaml
 ```
