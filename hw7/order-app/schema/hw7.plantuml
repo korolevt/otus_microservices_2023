@@ -1,0 +1,63 @@
+@startuml
+hide footbox
+title HW-7
+box Client
+  control client as "Client"
+end box
+
+box Order
+  control order_app as "order-app"
+end box
+
+box Payments
+  control payments_app as "payments-app"
+end box
+
+box Inventory
+  control inventory_app as "inventory-app"
+end box
+
+box Shipment
+  control shipment_app as "shipment-app"
+end box
+
+box Telemetry
+  control eager as "Eager"
+end box
+
+autonumber
+group Сделать заказ (Saga)
+
+client -> order_app : POST  /order (jwt)
+note over client, order_app
+POST запрос с x-auth-token в заголовке
+end note
+order_app --> eager: span "POST /order"
+order_app -> payments_app: POST /makePayment
+note over order_app, payments_app
+Запрос на совершение платежа
+end note
+payments_app -> payments_app: Снятие денег, запись в БД\n(если есть необходимое кол-во)
+payments_app --> eager: span "POST /makePayment"
+payments_app --> order_app : HTTP_OK (200) - ОК или\n400 - не хватило денег
+
+order_app -> inventory_app: POST /reserveGoods
+note over order_app, inventory_app
+Запрос на резервирование товара
+end note
+inventory_app -> inventory_app: Резервирование товара, запись в БД\n(если есть необходимое кол-во)
+inventory_app --> order_app : HTTP_OK (200) - ОК или 400 - если нет товара в наличии
+
+order_app -> shipment_app: POST /reserveCourier
+note over order_app, shipment_app
+Запрос на резервирование курьера
+end note
+shipment_app -> shipment_app: Резервирование курьера, запись в БД\n(если есть необходимое кол-во)
+shipment_app --> order_app : HTTP_OK (200) - ОК или 400 - если нет свободного курьера
+
+order_app --> client : HTTP_OK (200) - ОK или\n400 - ошибка выполнить транзакцию
+
+end group
+
+
+@enduml

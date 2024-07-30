@@ -1,0 +1,36 @@
+replicaCount: 1
+
+application:
+  deployment:
+    pod:
+      repository: tvv766/hw7-shipment-app
+      pullPolicy: Never
+      tag: "latest"
+      #tag: v1
+      port: 80
+  service:
+    type: LoadBalancer
+    port: 8086
+
+postgresql:
+  enabled: true
+  auth:
+    username: usr
+    password: pwd
+    database: user_db
+  service:
+    port: "5432"
+
+external:
+  billing_service: http://hw7-billing-app-service.default.svc.cluster.local:8081
+  payments_service: http://hw7-payments-app-service.default.svc.cluster.local:8084
+  inventory_service: http://hw7-inventory-app-service.default.svc.cluster.local:8085
+  shipment_service: http://hw7-shipment-app-service.default.svc.cluster.local:8086
+
+jaeger:
+  dns: http://jaeger-jaeger-all-in-one.default.svc.cluster.local:14250
+
+kafka:
+  dns: kafka.default.svc.cluster.local:9092
+
+auth_salt: "123"

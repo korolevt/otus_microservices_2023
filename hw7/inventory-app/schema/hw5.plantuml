@@ -1,0 +1,72 @@
+@startuml
+hide footbox
+title HW-5
+box Client
+  control client as "Client"
+end box
+box auth-app
+  control auth_app as "auth-app"
+end box
+box user_app
+  control user_app as "user-app"
+end box
+
+autonumber
+group Аутентификация
+
+client -> auth_app : POST /login
+note over client, auth_app
+POST запрос c username и password
+end note
+auth_app -> user_app : GET /users/?username=$val$password=$val
+note over auth_app, user_app
+Производится поиск пользователя с помощью сервиса user_app
+end note
+user_app --> auth_app : Найденный пользователь
+auth_app -> auth_app: Генерация сессии
+note over auth_app
+При успехе, создается сессия на 10 минут
+Записывается в базу данных session и возвращается uuid-сессии
+end note
+auth_app -> client: Возврат сессии (session)
+
+end group
+
+autonumber
+group Авторизация
+
+client -> auth_app : GET /auth (session)
+note over client, auth_app
+GET запрос с uuid-сессии
+end note
+auth_app -> auth_app: Генерация jwt-токена с солью
+note over auth_app
+Поиск uuid-сессии в базе данных
+Формирование jwt-токена : Срок годности токена - до закрытия сессии
+В клэймах токена сохраняются идентификатор пользователя и имя
+end note
+auth_app -> client : x-auth-token
+note over auth_app, client
+Возврат x-auth-token в заголовке ответа
+end note
+end group
+
+autonumber
+group Запросы профиля
+
+client -> user_app : GET /users/1 (jwt)
+note over client, user_app
+GET запрос с x-auth-token в заголовке
+end note
+user_app -> user_app: Проверка jwt-токена
+note over user_app
+Проверка валидности jwt-токена
+Проверка срока годности токена
+Сверка идентификатора пользователя в запросе с тем, который указан в клеймах токена
+end note
+user_app -> client : data
+note over auth_app, client
+Данные профайла пользователя
+end note
+end group
+@enduml 

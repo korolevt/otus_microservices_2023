@@ -1,0 +1,64 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}"
+  labels:
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"	
+    spec:
+      containers:
+        - name: post-install-job
+          image: postgres:latest
+          command:
+            - sh
+            - "-c"
+            - |
+              psql -a << 'EOF'
+                DROP TABLE IF EXISTS goods;
+                CREATE TABLE IF NOT EXISTS goods
+                (
+                   id serial PRIMARY KEY,
+                   name text NOT NULL,
+                   price int
+                );
+
+                DROP TABLE IF EXISTS goods_reservations;
+                CREATE TABLE IF NOT EXISTS goods_reservations
+                (
+                   id serial PRIMARY KEY,
+                   good_id int NOT NULL,
+                   order_id int
+                );
+
+                INSERT INTO goods (name, price) VALUES ('товар 1', 100);
+                INSERT INTO goods (name, price) VALUES ('товар 2', 200);
+                INSERT INTO goods (name, price) VALUES ('товар 3', 300);
+                INSERT INTO goods (name, price) VALUES ('товар 4', 400);
+              EOF
+          env:
+            - name: PGHOST
+              value: {{ include "postgresql.fullname" . | quote }}
+            - name: PGUSER 
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secret 
+                  key: postgres_user
+            - name: PGPASSWORD 
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secret
+                  key: postgres_password
+            - name: PGDATABASE 
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secret 
+                  key: postgres_database
+      restartPolicy: OnFailure
