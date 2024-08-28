@@ -1,0 +1,74 @@
+@startuml
+hide footbox
+title PR-4 (SAGA Отмена экскурсии - возврат денег)
+box Client
+  control client as "Client"
+end box
+box User
+  control user_app as "user-app"
+end box
+box Order
+  control order_app as "order-app"
+end box
+box Billing
+  control billing_app as "billing-app"
+end box
+box Excursions
+  control excursions_app as "excursions-app"
+end box
+box Broker
+  control kafka as "kafka"
+end box
+box Notifications
+  control notifications_app as "notifications-app"
+end box
+box Telemetry
+  control jaeger as "Jaeger"
+end box
+
+
+group Отмена экскурсии - возврат денег (Saga)
+autonumber
+
+client -> order_app : POST  /excursionCancellation (jwt)
+note over client, order_app
+POST запрос с x-auth-token в заголовке
+end note
+order_app --> jaeger: span "POST /excursionCancellation"
+order_app -> excursions_app: POST /excursions/reserved
+note over order_app, excursions_app
+Поиск зарезервированных заказов на данную экскурсию
+end note
+excursions_app --> order_app: список заказов
+order_app -> billing_app: POST /cancelPayment
+note over order_app, billing_app
+Запрос на отмену платежа (возврат денег)
+end note
+billing_app -> billing_app: Возврат денег, запись в БД
+billing_app --> jaeger: span "POST /cancelPayment"
+billing_app --> order_app : HTTP_OK (200) - ОК или\n500 - ошибка
+
+order_app -> excursions_app: POST /cancelExcursionReservation
+note over order_app, excursions_app
+Запрос на возврат билетов экскурсии
+end note
+excursions_app -> excursions_app: Отмена резерва билетов, запись в БД
+excursions_app --> order_app : HTTP_OK (200) - ОК или 500 - ошибка
+
+note over order_app, kafka
+Отправить сообщение в kafka (топик notifications)
+end note
+kafka --> notifications_app: consume (Подписка)
+note over kafka, notifications_app
+Забираем сообщение из kafka (топик notifications)
+end note
+notifications_app -> notifications_app: Запись в бд
+
+order_app --> client : HTTP_ОК (200) - заказы отменены\nили 500 - ошибка
+
+end group
+
+
+
+
+@enduml

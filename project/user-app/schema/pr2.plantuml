@@ -1,0 +1,87 @@
+@startuml
+hide footbox
+title PR-2 (Создание/Аутентификация/Авторизация)
+box Client
+  control client as "Client"
+end box
+box User
+  control user_app as "user-app"
+end box
+box Order
+  control order_app as "order-app"
+end box
+box Billing
+  control billing_app as "billing-app"
+end box
+box Excursions
+  control excursions_app as "excursions-app"
+end box
+box Broker
+  control kafka as "kafka"
+end box
+box Notifications
+  control notifications_app as "notifications-app"
+end box
+
+autonumber
+group Создать пользователя
+
+client -> user_app : POST /user/register
+note over client, user_app
+POST запрос создания пользователя
+end note
+user_app -> billing_app : POST /accounts
+note over user_app, billing_app
+Создать аккаунт в биллинге (0 на депозит)
+end note
+billing_app --> user_app : HTTP_CREATED (201)
+user_app -> user_app: Генерация сессии
+note over user_app
+При успехе, создается сессия на 1 час
+Записывается в базу данных session
+end note
+user_app --> client: HTTP_CREATED (201)
+note over user_app, client
+Возврат идентификатора
+зарегистрированного пользователя
+end note
+end group
+
+autonumber
+group Аутентификация
+client -> user_app : POST /user/login
+user_app -> user_app: Генерация jwt-токена с солью
+note over user_app
+Поиск пользователя в базе данных
+Формирование jwt-токена : Срок годности токена 15 минут
+В клэймах токена сохраняются идентификатор пользователя и его данные
+end note
+user_app --> client : access_token
+note over user_app, client
+Возврат jwt-токена
+end note
+end group
+
+autonumber
+group Положить деньги на счет пользователя
+
+client -> billing_app : POST  /billing/deposit (jwt)
+note over client, user_app
+POST запрос с x-auth-token в заголовке
+end note
+billing_app -> billing_app: Проверка jwt-токена
+note over billing_app
+Проверка валидности jwt-токена
+Проверка срока годности токена
+Сверка идентификатора пользователя в запросе с тем,
+который указан в клеймах токена
+end note
+billing_app -> billing_app: Добавление денег на депозит
+billing_app --> client : Депозит
+
+end group
+
+
+
+
+@enduml

@@ -1,0 +1,35 @@
+replicaCount: 1
+
+application:
+  deployment:
+    pod:
+      repository: tvv766/pr-excursions-app
+      pullPolicy: Never
+      tag: "latest"
+      #tag: v1
+      port: 80
+  service:
+    type: LoadBalancer
+    port: 8085
+
+postgresql:
+  enabled: true
+  auth:
+    username: usr
+    password: pwd
+    database: user_db
+  service:
+    port: "5432"
+
+external:
+  billing_service: http://pr-billing-app-service.default.svc.cluster.local:8081
+  order_service: http://pr-order-app-service.default.svc.cluster.local:8082
+  excursions_service: http://pr-excursions-app-service.default.svc.cluster.local:8085
+
+jaeger:
+  dns: http://jaeger-jaeger-all-in-one.default.svc.cluster.local:14250
+
+kafka:
+  dns: kafka.default.svc.cluster.local:9092
+
+auth_salt: "123"

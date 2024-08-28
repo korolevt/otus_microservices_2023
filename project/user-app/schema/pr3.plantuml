@@ -1,0 +1,85 @@
+@startuml
+hide footbox
+title PR-3 (SAGA Покупка билетов на экскурсию)
+box Client
+  control client as "Client"
+end box
+box User
+  control user_app as "user-app"
+end box
+box Order
+  control order_app as "order-app"
+end box
+box Billing
+  control billing_app as "billing-app"
+end box
+box Excursions
+  control excursions_app as "excursions-app"
+end box
+box Broker
+  control kafka as "kafka"
+end box
+box Notifications
+  control notifications_app as "notifications-app"
+end box
+box Telemetry
+  control jaeger as "Jaeger"
+end box
+
+
+group Заказать экскурсию (Saga)
+autonumber
+
+client -> order_app : POST  /order (jwt)
+note over client, order_app
+POST запрос с x-auth-token в заголовке
+end note
+order_app --> jaeger: span "POST /order"
+order_app -> billing_app: POST /makePayment
+note over order_app, billing_app
+Запрос на совершение платежа
+end note
+billing_app -> billing_app: Снятие денег, запись в БД\n(если есть необходимое кол-во)
+billing_app --> jaeger: span "POST /makePayment"
+billing_app --> order_app : HTTP_OK (200) - ОК или\n400 - не хватило денег
+
+order_app -> excursions_app: POST /reserveExcursion
+note over order_app, excursions_app
+Запрос на покупку билетов экскурсии
+end note
+excursions_app -> excursions_app: Резервирование билетов, запись в БД\n(если есть необходимое кол-во)
+excursions_app --> order_app : HTTP_OK (200) - ОК или 400 - если нет билетов в наличии
+
+note over order_app, kafka
+Отправить сообщение в kafka (топик notifications)
+end note
+kafka --> notifications_app: consume (Подписка)
+note over kafka, notifications_app
+Забираем сообщение из kafka (топик notifications)
+end note
+notifications_app -> notifications_app: Запись в бд
+
+order_app --> client : HTTP_CREATED (201) - заказ создан\nили 400 - не хватило денег
+
+end group
+
+autonumber
+group Посмотреть в сервисе нотификаций отправленные сообщения
+
+client -> notifications_app : POST  /notifications (jwt)
+note over client, user_app
+POST запрос с x-auth-token в заголовке
+end note
+notifications_app -> notifications_app: Проверка jwt-токена
+note over notifications_app
+Проверка валидности jwt-токена
+Проверка срока годности токена
+Сверка идентификатора пользователя в запросе с тем,
+который указан в клеймах токена
+end note
+notifications_app --> client : Отправленные сообщения
+
+end group
+
+
+@enduml

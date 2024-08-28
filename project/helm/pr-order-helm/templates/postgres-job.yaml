@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}"
+  labels:
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"	
+    spec:
+      containers:
+        - name: post-install-job
+          image: postgres:latest
+          command:
+            - sh
+            - "-c"
+            - |
+              psql -a << 'EOF'
+                 DROP TABLE IF EXISTS orders;
+                 CREATE TABLE IF NOT EXISTS orders(
+                    id SERIAL PRIMARY KEY,
+                    idempotency_key TEXT,
+                    user_id INTEGER NOT NULL);
+              EOF
+          env:
+            - name: PGHOST
+              value: {{ include "postgresql.fullname" . | quote }}
+            - name: PGUSER 
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secret 
+                  key: postgres_user
+            - name: PGPASSWORD 
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secret
+                  key: postgres_password
+            - name: PGDATABASE 
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secret 
+                  key: postgres_database
+      restartPolicy: OnFailure

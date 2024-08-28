@@ -1,0 +1,91 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ .Release.Name }}"
+  labels:
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: "{{ .Release.Name }}"
+      labels:
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"	
+    spec:
+      containers:
+        - name: post-install-job
+          image: postgres:latest
+          command:
+            - sh
+            - "-c"
+            - |
+              psql -a << 'EOF'
+                 DROP TABLE IF EXISTS locations;
+                 CREATE TABLE IF NOT EXISTS locations (
+                    id   SERIAL PRIMARY KEY,
+                    name text
+                 );
+
+                 INSERT INTO locations (id, name) VALUES (1, 'Алмазный фонд');
+                 INSERT INTO locations (id, name) VALUES (2, 'ВДНХ');
+
+                 DROP TABLE IF EXISTS excursions;
+                 CREATE TABLE IF NOT EXISTS excursions (
+                    id   SERIAL PRIMARY KEY,
+                    name text,
+                    duration INTERVAL,
+                    description TEXT
+                 );
+
+                 INSERT INTO excursions (id, name, duration, description) VALUES (1, 'Сокровища Алмазного фонда', '1 hours', null);
+                 INSERT INTO excursions (id, name, duration, description) VALUES (2, 'Путеводитель по ВДНХ', '3 hours', null);
+                 INSERT INTO excursions (id, name, duration, description) VALUES (3, 'Космонавтика и Авиация', '2 hours', null);
+
+
+                 DROP TABLE IF EXISTS excursion_schedule;
+                 CREATE TABLE IF NOT EXISTS excursion_schedule (
+                    id            SERIAL PRIMARY KEY,
+                    location_id   INTEGER,
+                    excursion_id  INTEGER,
+                    start_slot    TIMESTAMP,
+                    price         INTEGER,
+                    max_count     INTEGER,
+                    count         INTEGER /* кол-во заказанных */
+                 );
+
+                 INSERT INTO excursion_schedule (id, location_id, excursion_id, start_slot, price, max_count, count) VALUES (1, 1, 1, '2024-09-09 15:00:00', 1700, 20, 15);
+                 INSERT INTO excursion_schedule (id, location_id, excursion_id, start_slot, price, max_count, count) VALUES (2, 1, 1, '2024-09-09 17:00:00', 1700, 20, 19);
+                 INSERT INTO excursion_schedule (id, location_id, excursion_id, start_slot, price, max_count, count) VALUES (3, 1, 1, '2024-09-09 19:00:00', 1900, 20, 18);
+                 INSERT INTO excursion_schedule (id, location_id, excursion_id, start_slot, price, max_count, count) VALUES (4, 2, 2, '2024-09-09 17:00:00', 700, 50, 45);
+                 INSERT INTO excursion_schedule (id, location_id, excursion_id, start_slot, price, max_count, count) VALUES (5, 2, 3, '2024-09-09 13:00:00', 500, 200, 199);
+
+
+                 DROP TABLE IF EXISTS excursion_reservation;
+                 CREATE TABLE IF NOT EXISTS excursion_reservation (
+                    id                    SERIAL PRIMARY KEY,
+                    order_id              INTEGER,
+                    excursion_schedule_id INTEGER,
+                    count                 INTEGER /* кол-во билетов */
+                 );
+              EOF
+          env:
+            - name: PGHOST
+              value: {{ include "postgresql.fullname" . | quote }}
+            - name: PGUSER 
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secret 
+                  key: postgres_user
+            - name: PGPASSWORD 
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secret
+                  key: postgres_password
+            - name: PGDATABASE 
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Chart.Name }}-secret 
+                  key: postgres_database
+      restartPolicy: OnFailure
