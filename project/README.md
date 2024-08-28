@@ -69,7 +69,7 @@ helm install jaeger jaeger-all-in-one/jaeger-all-in-one
 Ингресс:
 kubectl apply -f api-gateway/nginx-ingress/ingress.yaml
 ```
-[Prometheus. Grafana](actions.txt)
+[Установка Prometheus. Grafana](actions.txt)
 
 
 6. Тест постмана (newman)
@@ -79,7 +79,7 @@ kubectl apply -f api-gateway/nginx-ingress/ingress.yaml
 
 7. Примеры отображения трассировки транзакции (и спаны) в системе Jaeger
 
-![скриншот](pic/jaeger1.jpg)
-![скриншот](pic/jaeger2.jpg)
+![скриншот](pic/eager1.jpg)
+![скриншот](pic/eager2.jpg)
 
 
